@@ -91,6 +91,7 @@ class Tut01 extends Tutorial {
 
     var tmpBuffer = BufferUtils.createFloatBuffer(vertexPositions.length)
     tmpBuffer.put(vertexPositions)
+    tmpBuffer.flip()
     glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject)
     glBufferData(GL_ARRAY_BUFFER, tmpBuffer, GL_STATIC_DRAW)
     glBindBuffer(GL_ARRAY_BUFFER, 0)
