@@ -103,8 +103,6 @@ class Tut01 extends Tutorial {
 
     vao = glGenVertexArrays
     glBindVertexArray(vao)
-
-    glViewport(0, 0, 500, 500)
   }
 
   def display {

@@ -59,6 +59,7 @@ object Framework {
       }
     } finally {
       Display.destroy()
+      Keyboard.destroy()
     }
   }
 }

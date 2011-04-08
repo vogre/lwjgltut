@@ -27,13 +27,10 @@ class Tut02FragPosition extends Tutorial {
 
   def initializeProgram {
     val vertexShader = "data/tut2/FragPosition.vert".compile
-    println(vertexShader)
     val fragmentShader = "data/tut2/FragPosition.frag".compile
-    println(fragmentShader)
 
     val shaderList = List(vertexShader, fragmentShader)
     theProgram = createProgram(shaderList)
-    println(theProgram)
   }
 
   def initializeVertexBuffer {
@@ -53,8 +50,6 @@ class Tut02FragPosition extends Tutorial {
 
     vao = glGenVertexArrays
     glBindVertexArray(vao)
-
-    glViewport(0, 0, 500, 500)
   }
 
   def display {
