@@ -1,10 +1,38 @@
 package com.github.vogre 
 
-import org.lwjgl.opengl.{Display, DisplayMode, ContextAttribs, PixelFormat, GL11}
+import org.lwjgl.opengl.{Display, DisplayMode, ContextAttribs, PixelFormat}
+import org.lwjgl.opengl.{GL11, GL15, GL20, GL30, GL32}
 import GL11._
+import GL15._
+import GL20._
+import GL30._
+import GL32._
 import org.lwjgl.input.Keyboard
 
 object Framework {
+  
+  implicit def path2glslShader(file: String) = new GLSLShaderFile(file)
+
+
+  def createProgram(shaderList: List[Int]) = {
+    val program = glCreateProgram
+    for(shader <- shaderList) { 
+        glAttachShader(program, shader)
+    }
+
+    glLinkProgram(program)
+
+    val status = glGetProgram(program, GL_LINK_STATUS)
+    if (status == GL_FALSE)
+    {
+      val infoLogLength = glGetProgram(program, GL_INFO_LOG_LENGTH)
+      val infoLog = glGetProgramInfoLog(program, infoLogLength)
+
+      throw new Exception("Link failure: " + infoLog)
+    }
+    program
+  }
+
   def play(tutorial: Tutorial) {
     try {
       Display.setTitle(tutorial.name)
