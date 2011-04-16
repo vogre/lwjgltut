@@ -37,6 +37,7 @@ object Framework {
     try {
       Display.setTitle(tutorial.name)
       Display.setDisplayMode(new DisplayMode(500, 500))
+      Display.setFullscreen(true)
       Display.create
       tutorial.init
       while(!Display.isCloseRequested && !tutorial.finished) {
