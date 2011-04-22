@@ -20,6 +20,11 @@ object Main {
         case "4.2" => new Tut4ShaderPerspective
         case "4.3" => new Tut4MatrixPerspective
         case "4.4" => new Tut4AspectRatio
+        case "5.1" => new Tut5OverlapNoDepth
+        case "5.2" => new Tut5BaseVertexOverlap
+        case "5.3" => new Tut5DepthBuffer
+        case "5.4" => new Tut5VertexClipping
+        case "5.5" => new Tut5DepthClamping
       }
       try {
         Framework.play(tut)

@@ -2,6 +2,7 @@ package com.github.vogre
 
 import org.lwjgl.opengl.{Display, DisplayMode, ContextAttribs, PixelFormat}
 import org.lwjgl.opengl.{GL11, GL15, GL20, GL30, GL32}
+import org.lwjgl.BufferUtils
 import GL11._
 import GL15._
 import GL20._
@@ -13,6 +14,19 @@ object Framework {
   
   implicit def path2glslShader(file: String) = new GLSLShaderFile(file)
 
+  def array2Buffer(arr: Array[Float]) = {
+    val buf = BufferUtils.createFloatBuffer(arr.length)
+    buf.put(arr)
+    buf.flip
+    buf
+  }
+  
+  def array2Buffer(arr: Array[Short]) = {
+    val buf = BufferUtils.createShortBuffer(arr.length)
+    buf.put(arr)
+    buf.flip
+    buf
+  }
 
   def createProgram(shaderList: List[Int]) = {
     val program = glCreateProgram
