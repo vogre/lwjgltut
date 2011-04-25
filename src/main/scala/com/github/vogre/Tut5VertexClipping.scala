@@ -231,16 +231,16 @@ class Tut5VertexClipping extends Tutorial {
     glFrontFace(GL_CW)
 
 
-	glEnable(GL_DEPTH_TEST)
-	glDepthMask(true)
-	glDepthFunc(GL_LEQUAL)
-	glDepthRange(0.0f, 1.0f)
+    glEnable(GL_DEPTH_TEST)
+    glDepthMask(true)
+    glDepthFunc(GL_LEQUAL)
+    glDepthRange(0.0f, 1.0f)
   }
 
   def display {
     
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
-    glClear(GL_COLOR_BUFFER_BIT)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     glUseProgram(theProgram)
     
