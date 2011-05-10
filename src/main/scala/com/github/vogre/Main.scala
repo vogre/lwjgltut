@@ -6,7 +6,7 @@ object Main {
   def main(args: Array[String]) = {
     if(args.length == 0) {
       println("enter tutorial number(1, 2.1, 2.2, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3, 4.4)")
-      println("(5.1, 5.2, 5.3, 5.4, 5.5, 6.1, 6.2, 6.3)")
+      println("(5.1, 5.2, 5.3, 5.4, 5.5, 6.1, 6.2, 6.3, 6.4)")
     } else {
       val arg = args(0)
       val tut = arg match {
@@ -29,6 +29,7 @@ object Main {
         case "6.1" => new Tut6Translation
         case "6.2" => new Tut6Scale
         case "6.3" => new Tut6Rotations
+        case "6.4" => new Tut6Hierarchy
       }
       try {
         Framework.play(tut)
