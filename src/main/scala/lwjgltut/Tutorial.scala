@@ -1,4 +1,4 @@
-package com.github.vogre 
+package lwjgltut 
 
 trait Tutorial {
   val name: String

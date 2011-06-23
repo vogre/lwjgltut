@@ -1,4 +1,4 @@
-package com.github.vogre 
+package lwjgltut 
 
 import org.lwjgl.opengl.{Display, DisplayMode, ContextAttribs, PixelFormat}
 import org.lwjgl.opengl.{GL11, GL15, GL20, GL30, GL32}

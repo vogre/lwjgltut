@@ -1,4 +1,4 @@
-package com.github.vogre
+package lwjgltut
 
 import org.lwjgl.opengl.{Display,DisplayMode, GL11, GL15, GL20, GL30, GL32}
 import org.lwjgl.input.Keyboard
@@ -17,9 +17,9 @@ import simplex3d.math.float.functions._
 import simplex3d.data._
 import simplex3d.data.float._
 
-class Tut6Rotations extends Tutorial {
+class Tut6Scale extends Tutorial {
 
-  override val name = "Tutorial 6 Rotations"
+  override val name = "Tutorial 6 Scale"
 
   val cameraToClipMatrix = Mat4(0.0f)
   val seq = DataBuffer[Mat4, RFloat](1)
@@ -94,11 +94,11 @@ class Tut6Rotations extends Tutorial {
   val startTime = System.nanoTime
 
   val instances = List(
-      new Instance(Vec3(0.0f, 0.0f, -25.0f), nullRotation),
-      new Instance(Vec3(-5.0f, -5.0f, -25.0f), rotateX),
-      new Instance(Vec3(-5.0f, 5.0f, -25.0f), rotateY),
-      new Instance(Vec3(5.0f, 5.0f, -25.0f), rotateZ),
-      new Instance(Vec3(5.0f, -5.0f, -25.0f), rotateAxis)
+      new Instance(Vec3(0.0f, 0.0f, -45.0f), nullScale),
+      new Instance(Vec3(-10.0f, -10.0f, -45.0f), staticUniformScale),
+      new Instance(Vec3(-10.0f, 10.0f, -45.0f), staticNonUniformScale),
+      new Instance(Vec3(10.0f, 10.0f, -45.0f), dynamicUniformScale),
+      new Instance(Vec3(10.0f, -10.0f, -45.0f), dynamicNonUniformScale)
   )
 
   
@@ -214,83 +214,46 @@ class Tut6Rotations extends Tutorial {
     }
   }
 
-  class Instance(offset: Vec3, rotateFunc: Float => Mat3) {
+  class Instance(offset: Vec3, scaleCalc: Float => Vec3) {
 
     def constructMatrix(elapsedTime: Float) = {
-      
-      val r = rotateFunc(elapsedTime)
-      val mat = Mat4(r)
+      val mat = Mat4(1.0f)
+      val v = scaleCalc(elapsedTime)
+      mat(0, 0) = v.x
+      mat(1, 1) = v.y
+      mat(2, 2) = v.z
       mat(3) = Vec4(offset, 1.0f)
       mat
     }
 
   }
 
-  def computeAngleRad(elapsedTime: Float, loopDuration: Float) = {
-    val scale = 3.14159f * 2.0f / loopDuration
-    val currTimeThroughLoop = elapsedTime % loopDuration
-    currTimeThroughLoop * scale
+  def calcLerpFactor(elapsedTime: Float, loopDuration: Float) = {
+    var value = (elapsedTime % loopDuration) / loopDuration
+    if (value > 0.5f)
+        value = 1 - value
+    2.0f * value
   }
   
-  def nullRotation(elapsedTime: Float) = Mat3(1.0f)
+  def nullScale(elapsedTime: Float) = Vec3(1.0f, 1.0f, 1.0f)
 
-  def rotateX(elapsedTime: Float) = {
-    val angRad = computeAngleRad(elapsedTime, 3.0f)
-    val mat = Mat3(1.0f)
-    val rcos = cos(angRad)
-    val rsin = sin(angRad)
-    mat(1, 1) = rcos
-    mat(1, 2) = -rsin
-    mat(2, 1) = rsin
-    mat(2, 1) = rcos
-    mat
+  def staticUniformScale(elapsedTime: Float) = Vec3(4.0f, 4.0f, 4.0f)
+
+  def staticNonUniformScale(elapsedTime: Float) = Vec3(0.5f, 1.0f, 10.0f)
+  
+  def dynamicUniformScale(elapsedTime: Float) = {
+    val loopDuration = 3.0f
+    val scale = Vec3(mix(1.0f, 4.0f, calcLerpFactor(elapsedTime, loopDuration)))
+    scale
   }
   
-  def rotateY(elapsedTime: Float) = {
-    val angRad = computeAngleRad(elapsedTime, 2.0f)
-    val mat = Mat3(1.0f)
-    val rcos = cos(angRad)
-    val rsin = sin(angRad)
-    mat(0, 0) = rcos
-    mat(0, 2) = rsin
-    mat(2, 0) = -rsin
-    mat(2, 2) = rcos
-    mat
-  }
-
-  def rotateZ(elapsedTime: Float) = {
-    val angRad = computeAngleRad(elapsedTime, 2.0f)
-    val mat = Mat3(1.0f)
-    val rcos = cos(angRad)
-    val rsin = sin(angRad)
-    mat(0, 0) = rcos
-    mat(0, 1) = -rsin
-    mat(1, 0) = rsin
-    mat(1, 1) = rcos
-    mat
-  }
-
-  def rotateAxis(elapsedTime: Float) = {
-    val angRad = computeAngleRad(elapsedTime, 2.0f)
-    val rCos = cos(angRad)
-    val rSin = sin(angRad)
-    val invCos = 1.0f - rCos
-    val invSin = 1.0f - rSin
-    val theMat = Mat3(1.0f)
-    val axis = normalize(Vec3(1.0f, 1.0f, 1.0f))
-	theMat(0, 0) = (axis.x * axis.x) + ((1 - axis.x * axis.x) * rCos)
-	theMat(0, 1) = axis.x * axis.y * (invCos) - (axis.z * rSin)
-	theMat(0, 2) = axis.x * axis.z * (invCos) + (axis.y * rSin)
-
-	theMat(1, 0) = axis.x * axis.y * (invCos) + (axis.z * rSin)
-	theMat(1, 1) = (axis.y * axis.y) + ((1 - axis.y * axis.y) * rCos)
-	theMat(1, 2) = axis.y * axis.z * (invCos) - (axis.x * rSin)
-
-	theMat(2, 0) = axis.x * axis.z * (invCos) - (axis.y * rSin)
-	theMat(2, 1) = axis.y * axis.z * (invCos) + (axis.x * rSin)
-	theMat(2, 2) = (axis.z * axis.z) + ((1 - axis.z * axis.z) * rCos)
-
-    theMat
+  def dynamicNonUniformScale(elapsedTime: Float) = {
+    val xLoopDuration = 3.0f
+    val zLoopDuration = 3.0f
+    val scale = Vec3(mix(1.0f, 4.0f, calcLerpFactor(elapsedTime, xLoopDuration)),
+                    1.0f,
+                    mix(1.0f, 10.0f, calcLerpFactor(elapsedTime, zLoopDuration)))
+    scale
   }
 }
 

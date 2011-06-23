@@ -1,4 +1,4 @@
-package com.github.vogre
+package lwjgltut
 
 import org.lwjgl.opengl.{Display,DisplayMode, GL11, GL15, GL20, GL30, GL32}
 import org.lwjgl.input.Keyboard

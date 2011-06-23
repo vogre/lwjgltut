@@ -1,4 +1,4 @@
-package com.github.vogre 
+package lwjgltut 
 import org.lwjgl.opengl.Display
 
 object Main {

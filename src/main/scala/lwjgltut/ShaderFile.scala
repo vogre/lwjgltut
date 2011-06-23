@@ -1,4 +1,4 @@
-package com.github.vogre
+package lwjgltut
 
 import java.io.{File, FileReader, BufferedReader}
 import org.lwjgl.opengl.{GL11, GL15, GL20, GL30, GL32}

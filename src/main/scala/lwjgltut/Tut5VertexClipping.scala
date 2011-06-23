@@ -1,4 +1,4 @@
-package com.github.vogre 
+package lwjgltut 
 
 import org.lwjgl.opengl.{Display,DisplayMode, GL11, GL15, GL20, GL30, GL32}
 import org.lwjgl.input.Keyboard
@@ -10,9 +10,9 @@ import GL30._
 import GL32._
 import Framework._
 
-class Tut5DepthBuffer extends Tutorial {
+class Tut5VertexClipping extends Tutorial {
   
-  override val name = "Tutorial 5 Depth Buffer"
+  override val name = "Tutorial 5 Vertex Clipping"
 
   var theProgram = 0
 
@@ -245,7 +245,7 @@ class Tut5DepthBuffer extends Tutorial {
     glUseProgram(theProgram)
     
     glBindVertexArray(vaoObject1)
-	glUniform3f(offsetUniform, 0.0f, 0.0f, 0.0f)
+	glUniform3f(offsetUniform, 0.0f, 0.0f, 0.5f)
     glDrawElements(GL_TRIANGLES, indexData.length, GL_UNSIGNED_SHORT, 0)
     
 	glUniform3f(offsetUniform, 0.0f, 0.0f, -1.0f)

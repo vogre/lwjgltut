@@ -1,4 +1,4 @@
-package com.github.vogre 
+package lwjgltut 
 
 import org.lwjgl.opengl.{Display, GL11, GL15, GL20, GL30, GL32}
 import org.lwjgl.input.Keyboard
@@ -10,65 +10,65 @@ import GL30._
 import GL32._
 import Framework._
 
-class Tut4MatrixPerspective extends Tutorial {
+class Tut4OrthoCube extends Tutorial {
   
-  override val name = "Tutorial 4 Matrix Perspective"
+  override val name = "Tutorial 4 Ortho Cube"
 
   var theProgram = 0
 
   var positionBufferObject = 0
   var vao = 0
   var offsetUniform = 0
-  var perspectiveMatrixUniform = 0
+
 
   val cubeVertices = Array(
-	 0.25f,  0.25f, -1.25f, 1.0f,
-	 0.25f, -0.25f, -1.25f, 1.0f,
-	-0.25f,  0.25f, -1.25f, 1.0f,
+     0.25f,  0.25f, 0.75f, 1.0f,
+     0.25f, -0.25f, 0.75f, 1.0f,
+    -0.25f,  0.25f, 0.75f, 1.0f,
 
-	 0.25f, -0.25f, -1.25f, 1.0f,
-	-0.25f, -0.25f, -1.25f, 1.0f,
-	-0.25f,  0.25f, -1.25f, 1.0f,
+     0.25f, -0.25f, 0.75f, 1.0f,
+    -0.25f, -0.25f, 0.75f, 1.0f,
+    -0.25f,  0.25f, 0.75f, 1.0f,
 
-	 0.25f,  0.25f, -2.75f, 1.0f,
-	-0.25f,  0.25f, -2.75f, 1.0f,
-	 0.25f, -0.25f, -2.75f, 1.0f,
+     0.25f,  0.25f, -0.75f, 1.0f,
+    -0.25f,  0.25f, -0.75f, 1.0f,
+     0.25f, -0.25f, -0.75f, 1.0f,
 
-	 0.25f, -0.25f, -2.75f, 1.0f,
-	-0.25f,  0.25f, -2.75f, 1.0f,
-	-0.25f, -0.25f, -2.75f, 1.0f,
+     0.25f, -0.25f, -0.75f, 1.0f,
+    -0.25f,  0.25f, -0.75f, 1.0f,
+    -0.25f, -0.25f, -0.75f, 1.0f,
 
-	-0.25f,  0.25f, -1.25f, 1.0f,
-	-0.25f, -0.25f, -1.25f, 1.0f,
-	-0.25f, -0.25f, -2.75f, 1.0f,
+    -0.25f,  0.25f,  0.75f, 1.0f,
+    -0.25f, -0.25f,  0.75f, 1.0f,
+    -0.25f, -0.25f, -0.75f, 1.0f,
 
-	-0.25f,  0.25f, -1.25f, 1.0f,
-	-0.25f, -0.25f, -2.75f, 1.0f,
-	-0.25f,  0.25f, -2.75f, 1.0f,
+    -0.25f,  0.25f,  0.75f, 1.0f,
+    -0.25f, -0.25f, -0.75f, 1.0f,
+    -0.25f,  0.25f, -0.75f, 1.0f,
 
-	 0.25f,  0.25f, -1.25f, 1.0f,
-	 0.25f, -0.25f, -2.75f, 1.0f,
-	 0.25f, -0.25f, -1.25f, 1.0f,
+     0.25f,  0.25f,  0.75f, 1.0f,
+     0.25f, -0.25f, -0.75f, 1.0f,
+     0.25f, -0.25f,  0.75f, 1.0f,
 
-	 0.25f,  0.25f, -1.25f, 1.0f,
-	 0.25f,  0.25f, -2.75f, 1.0f,
-	 0.25f, -0.25f, -2.75f, 1.0f,
+     0.25f,  0.25f,  0.75f, 1.0f,
+     0.25f,  0.25f, -0.75f, 1.0f,
+     0.25f, -0.25f, -0.75f, 1.0f,
 
-	 0.25f,  0.25f, -2.75f, 1.0f,
-	 0.25f,  0.25f, -1.25f, 1.0f,
-	-0.25f,  0.25f, -1.25f, 1.0f,
+     0.25f,  0.25f, -0.75f, 1.0f,
+     0.25f,  0.25f,  0.75f, 1.0f,
+    -0.25f,  0.25f,  0.75f, 1.0f,
 
-	 0.25f,  0.25f, -2.75f, 1.0f,
-	-0.25f,  0.25f, -1.25f, 1.0f,
-	-0.25f,  0.25f, -2.75f, 1.0f,
+     0.25f,  0.25f, -0.75f, 1.0f,
+    -0.25f,  0.25f,  0.75f, 1.0f,
+    -0.25f,  0.25f, -0.75f, 1.0f,
 
-	 0.25f, -0.25f, -2.75f, 1.0f,
-	-0.25f, -0.25f, -1.25f, 1.0f,
-	 0.25f, -0.25f, -1.25f, 1.0f,
+     0.25f, -0.25f, -0.75f, 1.0f,
+    -0.25f, -0.25f,  0.75f, 1.0f,
+     0.25f, -0.25f,  0.75f, 1.0f,
 
-	 0.25f, -0.25f, -2.75f, 1.0f,
-	-0.25f, -0.25f, -2.75f, 1.0f,
-	-0.25f, -0.25f, -1.25f, 1.0f
+     0.25f, -0.25f, -0.75f, 1.0f,
+    -0.25f, -0.25f, -0.75f, 1.0f,
+    -0.25f, -0.25f,  0.75f, 1.0f
   )
 
   val verticesColors = Array(
@@ -124,31 +124,13 @@ class Tut4MatrixPerspective extends Tutorial {
   val vertexPositions = cubeVertices ++ verticesColors
   
   def initializeProgram {
-    val vertexShader = "data/tut4/MatrixPerspective.vert".compile
+    val vertexShader = "data/tut4/OrthoWithOffset.vert".compile
     val fragmentShader = "data/tut4/StandardColors.frag".compile
 
     val shaderList = List(vertexShader, fragmentShader)
     theProgram = createProgram(shaderList)
 
     offsetUniform = glGetUniformLocation(theProgram, "offset")
-    perspectiveMatrixUniform = glGetUniformLocation(theProgram, "perspectiveMatrix")
-
-    val frustumScale = 1.0f
-    val zNear = 0.5f
-    val zFar = 3.0f
-    val theMatrix = new Array[Float](16)
-    theMatrix(0) = frustumScale
-    theMatrix(5) = frustumScale
-    theMatrix(10) = (zFar + zNear) / (zNear - zFar)
-    theMatrix(14) = (2 * zFar * zNear) / (zNear - zFar)
-    theMatrix(11) = -1.0f
-    val tmpBuf = BufferUtils.createFloatBuffer(16)
-    tmpBuf.put(theMatrix)
-    tmpBuf.flip()
-
-    glUseProgram(theProgram)
-    glUniformMatrix4(perspectiveMatrixUniform, false, tmpBuf)
-    glUseProgram(0)
   }
 
   def initializeVertexBuffer {
@@ -182,8 +164,9 @@ class Tut4MatrixPerspective extends Tutorial {
     val colorData = cubeVertices.length * 4
     
     glUseProgram(theProgram)
-    
-    glUniform2f(offsetUniform, 0.5f, 0.5f)
+
+
+    glUniform2f(offsetUniform, 0.5f, 0.25f)
 
     glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject)
     glEnableVertexAttribArray(0)
