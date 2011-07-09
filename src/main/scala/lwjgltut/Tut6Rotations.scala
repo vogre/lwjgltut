@@ -278,17 +278,17 @@ class Tut6Rotations extends Tutorial {
     val invSin = 1.0f - rSin
     val theMat = Mat3(1.0f)
     val axis = normalize(Vec3(1.0f, 1.0f, 1.0f))
-	theMat(0, 0) = (axis.x * axis.x) + ((1 - axis.x * axis.x) * rCos)
-	theMat(0, 1) = axis.x * axis.y * (invCos) - (axis.z * rSin)
-	theMat(0, 2) = axis.x * axis.z * (invCos) + (axis.y * rSin)
+    theMat(0, 0) = (axis.x * axis.x) + ((1 - axis.x * axis.x) * rCos)
+    theMat(0, 1) = axis.x * axis.y * (invCos) - (axis.z * rSin)
+    theMat(0, 2) = axis.x * axis.z * (invCos) + (axis.y * rSin)
 
-	theMat(1, 0) = axis.x * axis.y * (invCos) + (axis.z * rSin)
-	theMat(1, 1) = (axis.y * axis.y) + ((1 - axis.y * axis.y) * rCos)
-	theMat(1, 2) = axis.y * axis.z * (invCos) - (axis.x * rSin)
+    theMat(1, 0) = axis.x * axis.y * (invCos) + (axis.z * rSin)
+    theMat(1, 1) = (axis.y * axis.y) + ((1 - axis.y * axis.y) * rCos)
+    theMat(1, 2) = axis.y * axis.z * (invCos) - (axis.x * rSin)
 
-	theMat(2, 0) = axis.x * axis.z * (invCos) - (axis.y * rSin)
-	theMat(2, 1) = axis.y * axis.z * (invCos) + (axis.x * rSin)
-	theMat(2, 2) = (axis.z * axis.z) + ((1 - axis.z * axis.z) * rCos)
+    theMat(2, 0) = axis.x * axis.z * (invCos) - (axis.y * rSin)
+    theMat(2, 1) = axis.y * axis.z * (invCos) + (axis.x * rSin)
+    theMat(2, 2) = (axis.z * axis.z) + ((1 - axis.z * axis.z) * rCos)
 
     theMat
   }
