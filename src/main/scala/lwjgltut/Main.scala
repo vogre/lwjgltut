@@ -30,6 +30,7 @@ object Main {
         case "6.2" => new Tut6Scale
         case "6.3" => new Tut6Rotations
         case "6.4" => new Tut6Hierarchy
+        case "7.1" => new tutorial7.Tutorial7WorldScene
       }
       try {
         Framework.play(tut)

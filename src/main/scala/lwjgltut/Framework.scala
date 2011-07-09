@@ -66,7 +66,14 @@ object Framework {
 
         val lastError = glGetError
         if (lastError != GL_NO_ERROR) {
-          println(lastError)
+          val txtError = lastError match {
+            case GL_INVALID_ENUM => "invalid enum"
+            case GL_INVALID_VALUE => "invalid value"
+            case GL_INVALID_OPERATION => "invalid operation"
+            case GL_OUT_OF_MEMORY => "out of memory"
+            case _ => "unknown"
+          }
+          println("error occurred: " + txtError)
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
           return
