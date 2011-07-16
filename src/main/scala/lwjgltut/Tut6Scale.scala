@@ -114,11 +114,11 @@ class Tut6Scale extends Tutorial {
 
     val zNear = 1.0f
     val zFar = 61.0f
-    cameraToClipMatrix(0, 0) = frustumScale
-    cameraToClipMatrix(1, 1) = frustumScale
-    cameraToClipMatrix(2, 2) = (zFar + zNear) / (zNear - zFar)
-    cameraToClipMatrix(2, 3) = (2 * zFar * zNear) / (zNear - zFar)
-    cameraToClipMatrix(3, 2) = -1.0f
+    cameraToClipMatrix.m00 = frustumScale
+    cameraToClipMatrix.m11 = frustumScale
+    cameraToClipMatrix.m22 = (zFar + zNear) / (zNear - zFar)
+    cameraToClipMatrix.m23 = (2 * zFar * zNear) / (zNear - zFar)
+    cameraToClipMatrix.m32 = -1.0f
 
     seq(0) = cameraToClipMatrix
 
@@ -199,8 +199,8 @@ class Tut6Scale extends Tutorial {
   }
 
   def reshape(width: Int, height: Int) {
-    cameraToClipMatrix(0, 0) = frustumScale * (height / width.toFloat)
-    cameraToClipMatrix(1, 1) = frustumScale
+    cameraToClipMatrix.m00 = frustumScale * (height / width.toFloat)
+    cameraToClipMatrix.m11 = frustumScale
 
     glUseProgram(theProgram)
     seq(0) = cameraToClipMatrix
@@ -219,9 +219,9 @@ class Tut6Scale extends Tutorial {
     def constructMatrix(elapsedTime: Float) = {
       val mat = Mat4(1.0f)
       val v = scaleCalc(elapsedTime)
-      mat(0, 0) = v.x
-      mat(1, 1) = v.y
-      mat(2, 2) = v.z
+      mat.m00 = v.x
+      mat.m11 = v.y
+      mat.m22 = v.z
       mat(3) = Vec4(offset, 1.0f)
       mat
     }

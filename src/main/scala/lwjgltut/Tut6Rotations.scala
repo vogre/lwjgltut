@@ -54,15 +54,15 @@ class Tut6Rotations extends Tutorial {
 
   val posData = Array(
 
-	+1.0f, +1.0f, +1.0f,
-	-1.0f, -1.0f, +1.0f,
-	-1.0f, +1.0f, -1.0f,
-	+1.0f, -1.0f, -1.0f,
+  +1.0f, +1.0f, +1.0f,
+  -1.0f, -1.0f, +1.0f,
+  -1.0f, +1.0f, -1.0f,
+  +1.0f, -1.0f, -1.0f,
 
-	-1.0f, -1.0f, -1.0f,
-	+1.0f, +1.0f, -1.0f,
-	+1.0f, -1.0f, +1.0f,
-	-1.0f, +1.0f, +1.0f
+  -1.0f, -1.0f, -1.0f,
+  +1.0f, +1.0f, -1.0f,
+  +1.0f, -1.0f, +1.0f,
+  -1.0f, +1.0f, +1.0f
   )
 
   val colorData = Array( 
@@ -80,15 +80,15 @@ class Tut6Rotations extends Tutorial {
   val vertexData = posData ++ colorData
 
   val indexData = Array[Short](
-	0, 1, 2,
-	1, 0, 3,
-	2, 3, 0,
-	3, 2, 1,
+  0, 1, 2,
+  1, 0, 3,
+  2, 3, 0,
+  3, 2, 1,
 
-	5, 4, 6,
-	4, 5, 7,
-	7, 6, 4,
-	6, 7, 5
+  5, 4, 6,
+  4, 5, 7,
+  7, 6, 4,
+  6, 7, 5
   )
 
   val startTime = System.nanoTime
@@ -114,11 +114,11 @@ class Tut6Rotations extends Tutorial {
 
     val zNear = 1.0f
     val zFar = 61.0f
-    cameraToClipMatrix(0, 0) = frustumScale
-    cameraToClipMatrix(1, 1) = frustumScale
-    cameraToClipMatrix(2, 2) = (zFar + zNear) / (zNear - zFar)
-    cameraToClipMatrix(2, 3) = (2 * zFar * zNear) / (zNear - zFar)
-    cameraToClipMatrix(3, 2) = -1.0f
+    cameraToClipMatrix.m00 = frustumScale
+    cameraToClipMatrix.m11 = frustumScale
+    cameraToClipMatrix.m22 = (zFar + zNear) / (zNear - zFar)
+    cameraToClipMatrix.m23 = (2 * zFar * zNear) / (zNear - zFar)
+    cameraToClipMatrix.m32 = -1.0f
 
     seq(0) = cameraToClipMatrix
 
@@ -150,14 +150,14 @@ class Tut6Rotations extends Tutorial {
     val colorOffset = posData.length * 4
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject)
-	glEnableVertexAttribArray(0)
-	glEnableVertexAttribArray(1)
+    glEnableVertexAttribArray(0)
+    glEnableVertexAttribArray(1)
     glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0)
     glVertexAttribPointer(1, 4, GL_FLOAT, false, 0, colorOffset)
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject)
 
-	glBindVertexArray(0)
+    glBindVertexArray(0)
   }
 
   def init {
@@ -169,11 +169,10 @@ class Tut6Rotations extends Tutorial {
     glCullFace(GL_BACK)
     glFrontFace(GL_CW)
 
-
-	glEnable(GL_DEPTH_TEST)
-	glDepthMask(true)
-	glDepthFunc(GL_LEQUAL)
-	glDepthRange(0.0f, 1.0f)
+    glEnable(GL_DEPTH_TEST)
+    glDepthMask(true)
+    glDepthFunc(GL_LEQUAL)
+    glDepthRange(0.0f, 1.0f)
   }
 
   def display {
@@ -199,8 +198,8 @@ class Tut6Rotations extends Tutorial {
   }
 
   def reshape(width: Int, height: Int) {
-    cameraToClipMatrix(0, 0) = frustumScale * (height / width.toFloat)
-    cameraToClipMatrix(1, 1) = frustumScale
+    cameraToClipMatrix.m00 = frustumScale * (height / width.toFloat)
+    cameraToClipMatrix.m01 = frustumScale
 
     glUseProgram(theProgram)
     seq(0) = cameraToClipMatrix
@@ -239,10 +238,10 @@ class Tut6Rotations extends Tutorial {
     val mat = Mat3(1.0f)
     val rcos = cos(angRad)
     val rsin = sin(angRad)
-    mat(1, 1) = rcos
-    mat(1, 2) = -rsin
-    mat(2, 1) = rsin
-    mat(2, 1) = rcos
+    mat.m11 = rcos
+    mat.m12 = -rsin
+    mat.m21 = rsin
+    mat.m22 = rcos
     mat
   }
   
@@ -251,10 +250,10 @@ class Tut6Rotations extends Tutorial {
     val mat = Mat3(1.0f)
     val rcos = cos(angRad)
     val rsin = sin(angRad)
-    mat(0, 0) = rcos
-    mat(0, 2) = rsin
-    mat(2, 0) = -rsin
-    mat(2, 2) = rcos
+    mat.m00 = rcos
+    mat.m02 = rsin
+    mat.m20 = -rsin
+    mat.m22 = rcos
     mat
   }
 
@@ -263,10 +262,10 @@ class Tut6Rotations extends Tutorial {
     val mat = Mat3(1.0f)
     val rcos = cos(angRad)
     val rsin = sin(angRad)
-    mat(0, 0) = rcos
-    mat(0, 1) = -rsin
-    mat(1, 0) = rsin
-    mat(1, 1) = rcos
+    mat.m00 = rcos
+    mat.m01 = -rsin
+    mat.m10 = rsin
+    mat.m11 = rcos
     mat
   }
 
@@ -278,17 +277,17 @@ class Tut6Rotations extends Tutorial {
     val invSin = 1.0f - rSin
     val theMat = Mat3(1.0f)
     val axis = normalize(Vec3(1.0f, 1.0f, 1.0f))
-    theMat(0, 0) = (axis.x * axis.x) + ((1 - axis.x * axis.x) * rCos)
-    theMat(0, 1) = axis.x * axis.y * (invCos) - (axis.z * rSin)
-    theMat(0, 2) = axis.x * axis.z * (invCos) + (axis.y * rSin)
+    theMat.m00 = (axis.x * axis.x) + ((1 - axis.x * axis.x) * rCos)
+    theMat.m01 = axis.x * axis.y * (invCos) - (axis.z * rSin)
+    theMat.m02 = axis.x * axis.z * (invCos) + (axis.y * rSin)
 
-    theMat(1, 0) = axis.x * axis.y * (invCos) + (axis.z * rSin)
-    theMat(1, 1) = (axis.y * axis.y) + ((1 - axis.y * axis.y) * rCos)
-    theMat(1, 2) = axis.y * axis.z * (invCos) - (axis.x * rSin)
+    theMat.m10 = axis.x * axis.y * (invCos) + (axis.z * rSin)
+    theMat.m11 = (axis.y * axis.y) + ((1 - axis.y * axis.y) * rCos)
+    theMat.m12 = axis.y * axis.z * (invCos) - (axis.x * rSin)
 
-    theMat(2, 0) = axis.x * axis.z * (invCos) - (axis.y * rSin)
-    theMat(2, 1) = axis.y * axis.z * (invCos) + (axis.x * rSin)
-    theMat(2, 2) = (axis.z * axis.z) + ((1 - axis.z * axis.z) * rCos)
+    theMat.m20 = axis.x * axis.z * (invCos) - (axis.y * rSin)
+    theMat.m21 = axis.y * axis.z * (invCos) + (axis.x * rSin)
+    theMat.m22 = (axis.z * axis.z) + ((1 - axis.z * axis.z) * rCos)
 
     theMat
   }

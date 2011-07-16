@@ -169,11 +169,11 @@ class Tut6Hierarchy extends Tutorial {
 
     val zNear = 1.0f
     val zFar = 100.0f
-    cameraToClipMatrix(0, 0) = frustumScale
-    cameraToClipMatrix(1, 1) = frustumScale
-    cameraToClipMatrix(2, 2) = (zFar + zNear) / (zNear - zFar)
-    cameraToClipMatrix(2, 3) = (2 * zFar * zNear) / (zNear - zFar)
-    cameraToClipMatrix(3, 2) = -1.0f
+    cameraToClipMatrix.m00 = frustumScale
+    cameraToClipMatrix.m11 = frustumScale
+    cameraToClipMatrix.m22 = (zFar + zNear) / (zNear - zFar)
+    cameraToClipMatrix.m23 = (2 * zFar * zNear) / (zNear - zFar)
+    cameraToClipMatrix.m32 = -1.0f
 
     seq(0) = cameraToClipMatrix
 
@@ -236,8 +236,8 @@ class Tut6Hierarchy extends Tutorial {
   }
 
   def reshape(width: Int, height: Int) {
-    cameraToClipMatrix(0, 0) = frustumScale * (height / width.toFloat)
-    cameraToClipMatrix(1, 1) = frustumScale
+    cameraToClipMatrix.m00 = frustumScale * (height / width.toFloat)
+    cameraToClipMatrix.m11 = frustumScale
 
     glUseProgram(theProgram)
     seq(0) = cameraToClipMatrix
@@ -282,10 +282,10 @@ class MatrixStack {
     val rcos = cos(angRad)
     val rsin = sin(angRad)
     val mat = Mat3(1.0f)
-    mat(1, 1) = rcos
-    mat(1, 2) = -rsin
-    mat(2, 1) = rsin
-    mat(2, 1) = rcos
+    mat.m11 = rcos
+    mat.m12 = -rsin
+    mat.m21 = rsin
+    mat.m22 = rcos
     currentMatrix *= Mat4(mat)
   }
   
@@ -294,10 +294,10 @@ class MatrixStack {
     val rcos = cos(angRad)
     val rsin = sin(angRad)
     val mat = Mat3(1.0f)
-    mat(0, 0) = rcos
-    mat(0, 2) = rsin
-    mat(2, 0) = -rsin
-    mat(2, 2) = rcos
+    mat.m00 = rcos
+    mat.m02 = rsin
+    mat.m20 = -rsin
+    mat.m22 = rcos
     currentMatrix *= Mat4(mat)
   }
 
@@ -306,18 +306,18 @@ class MatrixStack {
     val rcos = cos(angRad)
     val rsin = sin(angRad)
     val mat = Mat3(1.0f)
-    mat(0, 0) = rcos
-    mat(0, 1) = -rsin
-    mat(1, 0) = rsin
-    mat(1, 1) = rcos
+    mat.m00 = rcos
+    mat.m01 = -rsin
+    mat.m10 = rsin
+    mat.m11 = rcos
     currentMatrix *= Mat4(mat)
   }
 
   def scale(scaleVec: Vec3) {
     val scaleMat = Mat4(1.0f)
-    scaleMat(0, 0) = scaleVec.x
-    scaleMat(1, 1) = scaleVec.y
-    scaleMat(2, 2) = scaleVec.z
+    scaleMat.m00 = scaleVec.x
+    scaleMat.m11 = scaleVec.y
+    scaleMat.m22 = scaleVec.z
     currentMatrix *= scaleMat
   }
 
