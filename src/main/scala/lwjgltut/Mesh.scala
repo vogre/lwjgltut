@@ -11,7 +11,18 @@ import GL30._
 import GL32._
 
 class RenderCmd(isIndexed: Boolean, primType: Int, 
-                start: Int, elemCount: Int, indexDataType: Int, primRestart: Option[Int])
+                start: Int, elemCount: Int, indexDataType: Int, primRestart: Option[Int]) {
+
+  def render {
+
+    if(isIndexed) {
+      glDrawElements(primType, elemCount, indexDataType, start)
+    } else {
+      glDrawArrays(primType, start, elemCount)
+    }
+  }
+
+}
 
 class IndexedRenderCmd(val primType: Int, val primRestart: Option[Int], val indexData: IndexData)
 
@@ -56,7 +67,6 @@ class Attribute(attType: String, index: Int, size: Int, isIntegral: Boolean,
     if(isIntegral) {
 
     }else {
-      println ("idx %s size %d".format(index, size))
       glVertexAttribPointer(index, size, attType2.glType, attType2.normalized, 0, offset)
     }
   }
@@ -85,13 +95,21 @@ class IndexData(val data: DataHolder, val attType: AttribType) {
   }
 }
 
-class MeshData(vao: Int, attribArraysBuffer: Int, indexBuffer: Int, renderCmds: Array[RenderCmd]){
+class MeshData(val vao: Int, val attribArraysBuffer: Int, val indexBuffer: Int, val renderCmds: Array[RenderCmd]){
   override def toString = "MeshData cmds:[%s] vao: %s buffer %s".format(renderCmds.mkString(","), 
                                                                         vao, attribArraysBuffer)
 }
 
 class Mesh(meshData: MeshData) {
   override def toString = "Mesh: [%s]".format(meshData)
+
+  def render {
+    glBindVertexArray(meshData.vao)
+    for(p <- meshData.renderCmds) {
+      p.render
+    }
+    glBindVertexArray(0)
+  }
 }
 
 
@@ -173,7 +191,6 @@ object Mesh {
 
     val zipped = attributes zip startLocations
     for((att, loc) <- zipped) {
-      println ("loc " + loc)
       att.fillBoundBufferObject(loc)
       att.setupAttributeArray(loc)
     }

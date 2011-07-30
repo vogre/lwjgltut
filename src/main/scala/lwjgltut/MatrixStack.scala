@@ -29,17 +29,17 @@ class MatrixStack {
     val invSin = 1.0f - rSin
     val theMat = Mat4(1.0f)
     val axis = normalize(rotateAxis)
-    theMat(0, 0) = (axis.x * axis.x) + ((1 - axis.x * axis.x) * rCos)
-    theMat(0, 1) = axis.x * axis.y * (invCos) - (axis.z * rSin)
-    theMat(0, 2) = axis.x * axis.z * (invCos) + (axis.y * rSin)
+    theMat.m00 = (axis.x * axis.x) + ((1 - axis.x * axis.x) * rCos)
+    theMat.m01 = axis.x * axis.y * (invCos) - (axis.z * rSin)
+    theMat.m02 = axis.x * axis.z * (invCos) + (axis.y * rSin)
 
-    theMat(1, 0) = axis.x * axis.y * (invCos) + (axis.z * rSin)
-    theMat(1, 1) = (axis.y * axis.y) + ((1 - axis.y * axis.y) * rCos)
-    theMat(1, 2) = axis.y * axis.z * (invCos) - (axis.x * rSin)
+    theMat.m10 = axis.x * axis.y * (invCos) + (axis.z * rSin)
+    theMat.m11 = (axis.y * axis.y) + ((1 - axis.y * axis.y) * rCos)
+    theMat.m12 = axis.y * axis.z * (invCos) - (axis.x * rSin)
 
-    theMat(2, 0) = axis.x * axis.z * (invCos) - (axis.y * rSin)
-    theMat(2, 1) = axis.y * axis.z * (invCos) + (axis.x * rSin)
-    theMat(2, 2) = (axis.z * axis.z) + ((1 - axis.z * axis.z) * rCos)
+    theMat.m20 = axis.x * axis.z * (invCos) - (axis.y * rSin)
+    theMat.m21 = axis.y * axis.z * (invCos) + (axis.x * rSin)
+    theMat.m22 = (axis.z * axis.z) + ((1 - axis.z * axis.z) * rCos)
 
     currentMatrix *= theMat
   }
@@ -49,10 +49,10 @@ class MatrixStack {
     val rcos = cos(angRad)
     val rsin = sin(angRad)
     val mat = Mat4(1.0f)
-    mat(1, 1) = rcos
-    mat(1, 2) = -rsin
-    mat(2, 1) = rsin
-    mat(2, 1) = rcos
+    mat.m11 = rcos
+    mat.m12 = -rsin
+    mat.m21 = rsin
+    mat.m22 = rcos
     currentMatrix *= mat
   }
   
@@ -61,10 +61,10 @@ class MatrixStack {
     val rcos = cos(angRad)
     val rsin = sin(angRad)
     val mat = Mat4(1.0f)
-    mat(0, 0) = rcos
-    mat(0, 2) = rsin
-    mat(2, 0) = -rsin
-    mat(2, 2) = rcos
+    mat.m00 = rcos
+    mat.m02 = rsin
+    mat.m20 = -rsin
+    mat.m22 = rcos
     currentMatrix *= mat
   }
 
@@ -73,19 +73,19 @@ class MatrixStack {
     val rcos = cos(angRad)
     val rsin = sin(angRad)
     val mat = Mat4(1.0f)
-    mat(0, 0) = rcos
-    mat(0, 1) = -rsin
-    mat(1, 0) = rsin
-    mat(1, 1) = rcos
+    mat.m00 = rcos
+    mat.m01 = -rsin
+    mat.m10 = rsin
+    mat.m11 = rcos
     currentMatrix *= mat
   }
 
 
   def scale(scaleVec: Vec3) {
     val scaleMat = Mat4(1.0f)
-    scaleMat(0, 0) = scaleVec.x
-    scaleMat(1, 1) = scaleVec.y
-    scaleMat(2, 2) = scaleVec.z
+    scaleMat.m00 = scaleVec.x
+    scaleMat.m11 = scaleVec.y
+    scaleMat.m22 = scaleVec.z
     currentMatrix *= scaleMat
   }
 
@@ -104,11 +104,11 @@ class MatrixStack {
   }
   
   def setMatrix(mat: Mat4) {
-    currentMatrix = mat
+    currentMatrix := mat
   }
 
   def perspective(fieldOfViewDeg: Float, aspectRatio: Float, near: Float, far: Float) {
-    currentMatrix *= perspectiveProj(radians(fieldOfViewDeg), aspectRatio, near, far)
+    currentMatrix = perspectiveProj(radians(fieldOfViewDeg), aspectRatio, near, far)
   }
 
   def withMatrix(op: => Unit) {
