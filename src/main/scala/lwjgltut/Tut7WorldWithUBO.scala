@@ -1,12 +1,13 @@
 package lwjgltut.tutorial7
 
-import org.lwjgl.opengl.{Display, GL11, GL15, GL20, GL30, GL32}
+import org.lwjgl.opengl.{Display, GL11, GL15, GL20, GL30, GL31, GL32}
 import org.lwjgl.input.Keyboard
 import org.lwjgl.BufferUtils
 import GL11._
 import GL15._
 import GL20._
 import GL30._
+import GL31._
 import GL32._
 import lwjgltut.framework._
 import lwjgltut.Framework._
@@ -19,20 +20,22 @@ import simplex3d.math.float.functions._
 import simplex3d.data._
 import simplex3d.data.float._
 
-
-class Tutorial7WorldScene extends Tutorial {
+class Tutorial7WorldWithUBO extends Tutorial {
 
   class ProgramData(val program: Int, 
                   val modelToWorldMatrixUnif: Int,
-                  val worldToCameraMatrixUnif: Int,
-                  val cameraToClipMatrixUnif: Int,
+                  val globalUniformBlockIndex: Int,
                   val baseColorUnif: Int)
 
   override val name = "World Scene"
 
+  val globalMatricesBindingIndex = 0
+
   var uniformColor: ProgramData = _
   var objectColor: ProgramData = _
   var uniformColorTint: ProgramData = _
+
+  var globalMatricesUBO = 0
 
   val zNear = 1.0f
   val zFar = 1000.0f
@@ -99,17 +102,26 @@ class Tutorial7WorldScene extends Tutorial {
     val frag = fragmentShader.compile
     val program = createProgram(List(vert, frag))
     val modelToWorldMatrixUnif = glGetUniformLocation(program, "modelToWorldMatrix")
-    val worldToCameraMatrixUnif = glGetUniformLocation(program, "worldToCameraMatrix")
-    val cameraToClipMatrixUnif = glGetUniformLocation(program, "cameraToClipMatrix")
+    val globalUniformBlockIndex = glGetUniformLocation(program, "GlobalMatrices")
     val baseColorUnif = glGetUniformLocation(program, "baseColor")
-    new ProgramData(program, modelToWorldMatrixUnif, worldToCameraMatrixUnif, cameraToClipMatrixUnif, baseColorUnif)
+    glUniformBlockBinding(program, globalUniformBlockIndex, globalMatricesBindingIndex) 
+    new ProgramData(program, modelToWorldMatrixUnif, globalUniformBlockIndex, baseColorUnif)
   }
 
 
   def init {
-    uniformColor = loadProgram("data/tut7/PosOnlyWorldTransform.vert", "data/tut7/ColorUniform.frag")
-    objectColor = loadProgram("data/tut7/PosColorWorldTransform.vert", "data/tut7/ColorPassthrough.frag")
-    uniformColorTint = loadProgram("data/tut7/PosColorWorldTransform.vert", "data/tut7/ColorMultUniform.frag")
+    uniformColor = loadProgram("data/tut7/PosOnlyWorldTransformUBO.vert", "data/tut7/ColorUniform.frag")
+    objectColor = loadProgram("data/tut7/PosColorWorldTransformUBO.vert", "data/tut7/ColorPassthrough.frag")
+    uniformColorTint = loadProgram("data/tut7/PosColorWorldTransformUBO.vert", "data/tut7/ColorMultUniform.frag")
+
+    globalMatricesUBO = glGenBuffers
+    glBindBuffer(GL_UNIFORM_BUFFER, globalMatricesUBO)
+    val tmpBuffer = BufferUtils.createByteBuffer(16 * 4 * 2)
+    glBufferData(GL_UNIFORM_BUFFER, tmpBuffer, GL_STREAM_DRAW)
+    glBindBuffer(GL_UNIFORM_BUFFER, 0)
+
+    glBindBufferRange(GL_UNIFORM_BUFFER, globalMatricesBindingIndex, globalMatricesUBO, 0, 16 * 4 * 2)
+    
 
     coneMesh = Mesh.load("data/tut7/UnitConeTint.xml")
     planeMesh = Mesh.load("data/tut7/UnitPlane.xml")
@@ -145,15 +157,9 @@ class Tutorial7WorldScene extends Tutorial {
 
     seq(0) = camMatrix.current
 
-    glUseProgram(uniformColor.program)
-    glUniformMatrix4(uniformColor.worldToCameraMatrixUnif, false, seq.buffer)
-    
-    glUseProgram(objectColor.program)
-    glUniformMatrix4(objectColor.worldToCameraMatrixUnif, false, seq.buffer)
-    
-    glUseProgram(uniformColorTint.program)
-    glUniformMatrix4(uniformColorTint.worldToCameraMatrixUnif, false, seq.buffer)
-    glUseProgram(0)
+    glBindBuffer(GL_UNIFORM_BUFFER, globalMatricesUBO)
+    glBufferSubData(GL_UNIFORM_BUFFER, 16 * 4, seq.buffer)
+    glBindBuffer(GL_UNIFORM_BUFFER, 0)
 
     val modelMatrix = new MatrixStack
 
@@ -184,14 +190,11 @@ class Tutorial7WorldScene extends Tutorial {
       val identity = Mat4(1.0f)
 
       modelMatrix.withMatrix {
-        val cameraAimVec = camTarget - camPos
-        modelMatrix.translate(Vec3(0.0f, 0.0f, -length(cameraAimVec)))
+        modelMatrix.translate(camTarget)
         modelMatrix.scale(Vec3(1.0f, 1.0f, 1.0f))
         glUseProgram(objectColor.program)
         seq(0) = modelMatrix.current
         glUniformMatrix4(objectColor.modelToWorldMatrixUnif, false, seq.buffer)
-        seq(0) = identity
-        glUniformMatrix4(objectColor.worldToCameraMatrixUnif, false, seq.buffer)
 
         cubeColorMesh.render
 
@@ -211,16 +214,11 @@ class Tutorial7WorldScene extends Tutorial {
 
     seq(0) = ms.current
 
-    glUseProgram(uniformColor.program)
-    glUniformMatrix4(uniformColor.cameraToClipMatrixUnif, false, seq.buffer)
-    
-    glUseProgram(objectColor.program)
-    glUniformMatrix4(objectColor.cameraToClipMatrixUnif, false, seq.buffer)
-    
-    glUseProgram(uniformColorTint.program)
-    glUniformMatrix4(uniformColorTint.cameraToClipMatrixUnif, false, seq.buffer)
+    glBindBuffer(GL_UNIFORM_BUFFER, globalMatricesUBO)
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, seq.buffer)
+    glBindBuffer(GL_UNIFORM_BUFFER, 0)
 
-    glUseProgram(0)
+    glViewport(0, 0, width, height)
   }
 
   def drawForest(modelMatrix: MatrixStack) {

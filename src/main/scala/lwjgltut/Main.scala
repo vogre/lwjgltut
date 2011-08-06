@@ -31,6 +31,7 @@ object Main {
         case "6.3" => new Tut6Rotations
         case "6.4" => new Tut6Hierarchy
         case "7.1" => new tutorial7.Tutorial7WorldScene
+        case "7.2" => new tutorial7.Tutorial7WorldWithUBO
       }
       try {
         Framework.play(tut)
