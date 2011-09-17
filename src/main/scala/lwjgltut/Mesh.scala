@@ -51,7 +51,7 @@ class ShortDataHolder(dataArray: Array[Short]) extends DataHolder(dataArray.leng
   }
 }
 
-class Attribute(attType: String, index: Int, size: Int, isIntegral: Boolean, 
+class Attribute(attType: String, val index: Int, size: Int, isIntegral: Boolean, 
                 data: DataHolder, attType2: AttribType) {
 
   def numElements = data.dataLength / size
@@ -95,7 +95,7 @@ class IndexData(val data: DataHolder, val attType: AttribType) {
   }
 }
 
-class MeshData(val vao: Int, val attribArraysBuffer: Int, val indexBuffer: Int, val renderCmds: Array[RenderCmd]){
+class MeshData(val vao: Int, val attribArraysBuffer: Int, val indexBuffer: Int, val renderCmds: Array[RenderCmd], val namedVaos: Map[String, Int]){
   override def toString = "MeshData cmds:[%s] vao: %s buffer %s".format(renderCmds.mkString(","), 
                                                                         vao, attribArraysBuffer)
 }
@@ -105,6 +105,15 @@ class Mesh(meshData: MeshData) {
 
   def render {
     glBindVertexArray(meshData.vao)
+    for(p <- meshData.renderCmds) {
+      p.render
+    }
+    glBindVertexArray(0)
+  }
+
+  def render(vaoName: String) {
+    val vao = meshData.namedVaos(vaoName)
+    glBindVertexArray(vao)
     for(p <- meshData.renderCmds) {
       p.render
     }
@@ -145,6 +154,32 @@ object Mesh {
       attribute
     }
 
+    val vaoElems = elem \ "vao"
+
+    val vaos = for (v <- vaoElems) yield {
+      
+      val vaoName = (v \ "@name").text.toString
+
+      val sources = v \ "source"
+
+      val indices = sources.map(el => (el \ "@attrib").text.toInt).toArray
+      val vao = (vaoName, indices)
+      vao
+    }
+
+
+    val arrays = elem \ "arrays"
+
+    val arrayRenderCmds = for (a <- arrays) yield {
+      val sCmd = (a \ "@cmd").text
+      val primType = getType(sCmd)
+      val start = (a \ "@start").text.toInt
+      assert (start >= 0)
+      val count = (a \ "@count").text.toInt
+      assert (count >= 0)
+      new RenderCmd(false, primType, start, count, 0, None)
+    }
+
     val indices = elem \ "indices"
     val indexedRenderCmds = for (i <- indices) yield {
       val sType = (i \ "@type").text
@@ -179,9 +214,10 @@ object Mesh {
       attribBufferSize +=  attrib.byteSize
       startLoc
     }
+
     
-    val vao = glGenVertexArrays
-    glBindVertexArray(vao)
+    val everythingVao = glGenVertexArrays
+    glBindVertexArray(everythingVao)
 
     val attribArraysBuffer = glGenBuffers
     glBindBuffer(GL_ARRAY_BUFFER, attribArraysBuffer)
@@ -194,6 +230,20 @@ object Mesh {
       att.fillBoundBufferObject(loc)
       att.setupAttributeArray(loc)
     }
+
+    val vaoPairs = for (namedVao <- vaos) yield {
+      val singleVao = glGenVertexArrays
+      glBindVertexArray(singleVao)
+      val (name, indices) = namedVao
+      for (vaoIndex <- indices) {
+        val (att, loc) = zipped.find(x => { val (a,l) = x; a.index == vaoIndex }).get
+        att.setupAttributeArray(loc)
+      }
+      (name, singleVao)
+    }
+
+    val namedVaos = vaoPairs.toMap
+
 
     glBindVertexArray(0)
 
@@ -209,7 +259,7 @@ object Mesh {
 
     val zipped2 = indexedRenderCmds zip indexStartLocations
 
-    glBindVertexArray(vao)
+    glBindVertexArray(everythingVao)
     val indexBuffer = glGenBuffers
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer)
     //HACK: creating an empty buffer
@@ -221,8 +271,10 @@ object Mesh {
       new RenderCmd(true, cmd.primType, loc, cmd.indexData.data.dataLength, cmd.indexData.attType.glType, cmd.primRestart)
     }
 
+    val allRenderCmds = renderCmds ++ arrayRenderCmds
 
-    val md = new MeshData(vao, attribArraysBuffer, indexBuffer, renderCmds.toArray)
+
+    val md = new MeshData(everythingVao, attribArraysBuffer, indexBuffer, allRenderCmds.toArray, namedVaos)
     val m = new Mesh(md)
     m
   }
