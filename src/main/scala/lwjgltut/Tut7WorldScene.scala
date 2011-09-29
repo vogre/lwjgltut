@@ -74,7 +74,7 @@ class Tutorial7WorldScene extends Tutorial {
     result
   }
 
-  def calcLookAtMatrix(cameraPt: Vec3, lookPt: Vec3, upPt: Vec3) = {
+  def calcLookAtMatrix(cameraPt: Vec3, lookPt: inVec3, upPt: inVec3) = {
     val lookDir = normalize(lookPt - cameraPt)
     val upDir = normalize(upPt)
     val rightDir = normalize(cross(lookDir, upDir))

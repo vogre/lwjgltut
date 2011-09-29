@@ -33,6 +33,7 @@ object Main {
         case "7.1" => new tutorial7.Tutorial7WorldScene
         case "7.2" => new tutorial7.Tutorial7WorldWithUBO
         case "8.1" => new tutorial8.Tutorial8GimbalLock
+        case "8.2" => new tutorial8.Tutorial8QuaternionYPR
       }
       try {
         Framework.play(tut)
