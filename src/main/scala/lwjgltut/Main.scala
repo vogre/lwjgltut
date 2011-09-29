@@ -34,6 +34,7 @@ object Main {
         case "7.2" => new tutorial7.Tutorial7WorldWithUBO
         case "8.1" => new tutorial8.Tutorial8GimbalLock
         case "8.2" => new tutorial8.Tutorial8QuaternionYPR
+        case "8.3" => new tutorial8.Tutorial8CameraRelative
       }
       try {
         Framework.play(tut)
