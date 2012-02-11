@@ -32,7 +32,7 @@ class Tutorial8QuaternionYPR extends Tutorial {
 
   var ship : Mesh = _
 
-  var orientation = Quat4.Identity.mutableCopy
+  var orientation: Quat4 = Quat4.Identity
 
   var rightMultiply = true
 

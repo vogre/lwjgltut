@@ -35,11 +35,12 @@ object Main {
         case "8.1" => new tutorial8.Tutorial8GimbalLock
         case "8.2" => new tutorial8.Tutorial8QuaternionYPR
         case "8.3" => new tutorial8.Tutorial8CameraRelative
+        case "8.4" => new tutorial8.Tutorial8Interpolation
       }
       try {
         Framework.play(tut)
       } catch {
-        case e: Exception  => System.err.println(e)
+        case e: Exception  => e.printStackTrace
       }
     }
   }
